@@ -1,10 +1,15 @@
 package com.example.fancynotes
 
+import android.app.Activity
 import android.app.DatePickerDialog
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,15 +35,19 @@ import com.example.fancynotes.ui.theme.min_dp
 import com.example.fancynotes.ui.theme.radius_dp
 import com.example.fancynotes.ui.theme.smaller_dp
 import java.util.Calendar
-import java.util.Date
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 //import com.example.fancynotes.ui.theme.*
 
 enum class Screen {
-    MAIN_SCREEN, EDIT_SCREEN
+    MAIN_SCREEN, EDIT_SCREEN,
 }
 
 val defaultNotes = arrayOf(
@@ -55,9 +64,20 @@ object Current {
 
 class MainActivity : ComponentActivity() {
     private val dbHelper = NoteDbHelper(this)
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var signInResultLauncher: ActivityResultLauncher<Intent>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Login
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("YOUR_WEB_APPLICATION_CLIENT_ID")
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         Current.NOTES = queryAllNote(dbHelper)
         if (Current.NOTES.isEmpty()) {
@@ -65,6 +85,18 @@ class MainActivity : ComponentActivity() {
             for(note in defaultNotes) {
                 insertNote(dbHelper, note)
             }
+        }
+
+        // Check Login
+        signInResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                handleSignInResult(task)
+                Toast.makeText(this, "LOGIN MORE SUCCESSFUL", Toast.LENGTH_SHORT).show()
+            }
+            Toast.makeText(this, "LOGIN SUCCESSFUL", Toast.LENGTH_SHORT).show()
         }
 
         setContent {
@@ -75,23 +107,31 @@ class MainActivity : ComponentActivity() {
                     Current.NOTES = queryAllNote(dbHelper)
 
                     when (Current.SCREEN_STATE) {
-                        Screen.MAIN_SCREEN -> MainScreenDisplay()
-                        Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper)
+                        Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainActivity::performGoogleSignIn)
+                        Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper, this@MainActivity::performGoogleSignIn)
                     }
                 }
             }
         }
     }
 
-    override fun onDestroy() {
+    private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
+        Toast.makeText(this, "LOGIN SUCCESSFUL", Toast.LENGTH_SHORT).show()
+    }
 
+    override fun onDestroy() {
         dbHelper.close()
         super.onDestroy()
+    }
+
+    fun performGoogleSignIn() {
+        val signInIntent = googleSignInClient.signInIntent
+        signInResultLauncher.launch(signInIntent)
     }
 }
 
 @Composable
-fun MainScreenTopBar() {
+fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
     TopAppBar {
         Row(modifier = Modifier
@@ -101,6 +141,18 @@ fun MainScreenTopBar() {
 
 
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Bottom) {
+                // Google Sign-In Button
+                Button(
+                    onClick = onGoogleSignIn,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "Google button"
+                    )
+                }
+
+                // Menu Button
                 IconButton(onClick = { showMenu = !showMenu }) {
                     Icon(
                         painter = painterResource(id = R.drawable.more),
@@ -132,6 +184,7 @@ fun MainScreenTopBar() {
                 }
             }
         }
+
     }
 }
 
@@ -195,9 +248,9 @@ fun NoteCard(msg: Note, index: Int) {
 }
 
 @Composable
-fun MainScreenDisplay() {
+fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
     Column {
-        MainScreenTopBar()
+        MainScreenTopBar(onGoogleSignIn)
         Spacer(modifier = Modifier.height(smaller_dp))
         NoteListDisplay(
             Current.NOTES
@@ -321,7 +374,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
 }
 
 @Composable
-fun EditScreenDisplay(dbHelper: NoteDbHelper) {
+fun EditScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
     val note = when (Current.EDIT_NOTE_INDEX) {
         EditMode.INSERT -> Note("", "")
         else -> Current.NOTES[Current.EDIT_NOTE_INDEX]
@@ -332,3 +385,5 @@ fun EditScreenDisplay(dbHelper: NoteDbHelper) {
         EditNote(dbHelper, note)
     }
 }
+
+
