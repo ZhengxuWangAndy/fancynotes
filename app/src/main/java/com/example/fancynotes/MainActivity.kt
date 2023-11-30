@@ -1,5 +1,7 @@
 package com.example.fancynotes
 
+import android.app.DatePickerDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,12 +21,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.fancynotes.ui.theme.ImportanceColors
+import com.example.fancynotes.ui.theme.White
+import com.example.fancynotes.ui.theme.bottom_dp
 import com.example.fancynotes.ui.theme.fancyTheme
 import com.example.fancynotes.ui.theme.icons_dp
 import com.example.fancynotes.ui.theme.medium_dp
 import com.example.fancynotes.ui.theme.min_dp
 import com.example.fancynotes.ui.theme.radius_dp
 import com.example.fancynotes.ui.theme.smaller_dp
+import java.util.Calendar
+import java.util.Date
+import androidx.compose.ui.platform.LocalContext
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 //import com.example.fancynotes.ui.theme.*
 
 enum class Screen {
@@ -86,22 +96,37 @@ fun MainScreenTopBar() {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(medium_dp)) {
-            Text(text = "Fancy Note", fontSize = 24.sp)
+            Text(text = "WhimsiNote", fontSize = 24.sp)
 
-            Row (modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End ) {
+
+            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Bottom) {
                 Icon(
-                    painter = painterResource(id = R.drawable.add2),
+                    painter = painterResource(id = R.drawable.more),
                     tint = Color.White,
-                    contentDescription = "Add Note Button",
-                    modifier = Modifier
-                        .size(icons_dp, icons_dp)
-                        .clickable {
-                            Current.EDIT_NOTE_INDEX = EditMode.INSERT
-                            Current.SCREEN_STATE = Screen.EDIT_SCREEN
-                        }
+                    contentDescription = "more button"
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun MainScreenBottomBar() {
+    BottomAppBar(backgroundColor = White){
+        Row (modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End ) {
+            Icon(
+                painter = painterResource(id = R.drawable.add2),
+                tint = Color.Black,
+                contentDescription = "Add Note Button",
+                modifier = Modifier
+                    .size(radius_dp, radius_dp)
+                    .padding(min_dp)
+                    .clickable {
+                        Current.EDIT_NOTE_INDEX = EditMode.INSERT
+                        Current.SCREEN_STATE = Screen.EDIT_SCREEN
+                    }
+            )
         }
     }
 }
@@ -151,6 +176,8 @@ fun MainScreenDisplay() {
         NoteListDisplay(
             Current.NOTES
         )
+        Spacer(modifier = Modifier.height(bottom_dp))
+        MainScreenBottomBar()
     }
 }
 
@@ -186,13 +213,42 @@ fun EditNoteTopBar(dbHelper: NoteDbHelper) {
 
 @Composable
 fun EditNote(dbHelper: NoteDbHelper, note: Note) {
+    val context = LocalContext.current
     var title by remember { mutableStateOf(note.title) }
     var content by remember { mutableStateOf(note.content) }
     var importanceSlider by remember { mutableStateOf(note.importance.toFloat()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var selectedDateText by remember { mutableStateOf("") }
+
+    LaunchedEffect(showDatePicker) {
+        if (showDatePicker) {
+            val calendar = Calendar.getInstance()
+            DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    calendar.set(year, month, dayOfMonth)
+                    val sdf = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
+                    selectedDateText = sdf.format(calendar.time) // Update the text to show the selected date
+                    showDatePicker = false
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(medium_dp)) {
+        Row {
+            Button(onClick = { showDatePicker = true }) {
+                Text(text = "Select Date")
+            }
+            if (selectedDateText.isNotEmpty()) {
+                Text(text = selectedDateText, modifier = Modifier.padding(start = medium_dp))
+            }
+        }
         Text(text = "Title")
         OutlinedTextField(
             value = title,

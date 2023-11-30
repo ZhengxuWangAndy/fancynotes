@@ -48,9 +48,9 @@ fun fancyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable 
     )
 }
 
-// 全局 dp 暂存
 val min_dp = 4.dp
 val smaller_dp = 8.dp
 val medium_dp = 12.dp
 val icons_dp = 32.dp
 val radius_dp = 52.dp
+val bottom_dp = 380.dp

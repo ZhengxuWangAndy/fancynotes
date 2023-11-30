@@ -14,6 +14,7 @@ val BlueA100 = Color(0xFF8C9EFF)
 val TealA100 = Color(0xFF84FFFF)
 val GreenA100 = Color(0xFFCCFF90)
 val YellowA100 = Color(0xFFFFD180)
+val White = Color(0xFFFFFFFF)
 
 val ImportanceColors = arrayOf(YellowA100, GreenA100, TealA100, BlueA100, PinkA100)
 
