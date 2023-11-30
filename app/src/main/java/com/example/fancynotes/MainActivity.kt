@@ -92,6 +92,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreenTopBar() {
+    var showMenu by remember { mutableStateOf(false) }
     TopAppBar {
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -100,11 +101,35 @@ fun MainScreenTopBar() {
 
 
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Bottom) {
-                Icon(
-                    painter = painterResource(id = R.drawable.more),
-                    tint = Color.White,
-                    contentDescription = "more button"
-                )
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.more),
+                        tint = Color.White,
+                        contentDescription = "more button"
+                    )
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                    }) {
+                        Text("Sort by Date")
+                    }
+
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                    }) {
+                        Text("Group by Date")
+                    }
+
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                    }) {
+                        Text("Select Note")
+                    }
+                }
             }
         }
     }
@@ -127,6 +152,7 @@ fun MainScreenBottomBar() {
                         Current.SCREEN_STATE = Screen.EDIT_SCREEN
                     }
             )
+
         }
     }
 }
