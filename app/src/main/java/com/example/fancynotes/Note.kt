@@ -18,13 +18,13 @@ object SelectResult {
 }
 
 
-class Note (var title: String, var content: String, var importance: Int, var id: Long) {
+class Note (var title: String, var content: String, var importance: Int, var id: Long, var date: String) {
 
-    constructor(title: String, content: String, importance: Int) : this(title, content, importance, -1) {}
-    constructor(title: String, content: String) : this(title, content, 0, -1) {}
-    constructor(title: String, importance: Int) : this(title, "", importance, -1) {}
-    constructor(title: String) : this(title, "", 0, -1) {}
 
+    constructor(title: String, content: String, importance: Int, date: String) : this(title, content, importance, -1, date) {}
+    constructor(title: String, content: String, date: String) : this(title, content, 0, -1, date) {}
+    constructor(title: String, importance: Int, date: String) : this(title, "", importance, -1, date) {}
+    constructor(title: String, date: String) : this(title, "", 0, -1, date) {}
 
     init {
         importance = abs((importance) % 5)
@@ -37,6 +37,7 @@ object FeedEntry : BaseColumns {
     const val COLUMN_NAME_TITLE = "title"
     const val COLUMN_NAME_CONTENT = "content"
     const val COLUMN_NAME_IMPORTANCE = "importance"
+    const val COLUMN_NAME_DATE = "date"
 }
 
 
@@ -46,7 +47,8 @@ private const val SQL_CREATE_ENTRIES =
     "${BaseColumns._ID} INTEGER PRIMARY KEY," +
     "${FeedEntry.COLUMN_NAME_TITLE} TEXT UNIQUE," +
     "${FeedEntry.COLUMN_NAME_CONTENT} TEXT," +
-    "${FeedEntry.COLUMN_NAME_IMPORTANCE} INTEGER)"
+    "${FeedEntry.COLUMN_NAME_IMPORTANCE} INTEGER," +
+    "${FeedEntry.COLUMN_NAME_DATE} TEXT)"
 
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${FeedEntry.TABLE_NAME}"
@@ -54,7 +56,7 @@ private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${FeedEntry.TABLE_N
 
 class NoteDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         const val DATABASE_NAME = "Note.db"
     }
 
@@ -94,7 +96,9 @@ fun queryAllNote(dbHelper: NoteDbHelper): MutableList<Note> {
             val itemTitle = getString(getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_TITLE))
             val itemContent = getString(getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_CONTENT))
             val itemImportance = getInt(getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_IMPORTANCE))
-            val note = Note(itemTitle, itemContent, itemImportance, itemID)
+            val itemDate = getString(getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_DATE))
+
+            val note = Note(itemTitle, itemContent, itemImportance, itemID, itemDate)
             notes.add(note)
         }
     }
@@ -139,6 +143,7 @@ fun insertNote(dbHelper: NoteDbHelper, note: Note) {
         put(FeedEntry.COLUMN_NAME_TITLE, note.title)
         put(FeedEntry.COLUMN_NAME_CONTENT, note.content)
         put(FeedEntry.COLUMN_NAME_IMPORTANCE, note.importance)
+        put(FeedEntry.COLUMN_NAME_DATE, note.date)
     }
 
     if (note.id == SelectResult.NOT_FOUND) {
@@ -170,6 +175,7 @@ fun updateNote(dbHelper: NoteDbHelper, note: Note) {
         put(FeedEntry.COLUMN_NAME_TITLE, note.title)
         put(FeedEntry.COLUMN_NAME_CONTENT, note.content)
         put(FeedEntry.COLUMN_NAME_IMPORTANCE, note.importance)
+        put(FeedEntry.COLUMN_NAME_DATE, note.date)
     }
     val selection = "${BaseColumns._ID} = ?"
     val selectionArgs = arrayOf(note.id.toString())

@@ -51,9 +51,9 @@ enum class Screen {
 }
 
 val defaultNotes = arrayOf(
-    Note("Tap notes to edit", "Try now", 1),
-    Note("Tap plus to add new one", "Start to create your notes", 2),
-    Note("Example", "What to eat?"),
+    Note("Tap notes to edit", "Try now", 1, "Mon, Dec 4, 2023"),
+    Note("Tap plus to add new one", "Start to create your notes", 2, "Mon, Dec 4, 2023"),
+    Note("Example", "What to eat?","Mon, Dec 4, 2023"),
 )
 
 object Current {
@@ -297,7 +297,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
     var content by remember { mutableStateOf(note.content) }
     var importanceSlider by remember { mutableStateOf(note.importance.toFloat()) }
     var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDateText by remember { mutableStateOf("") }
+    var selectedDateText by remember { mutableStateOf(note.date) }
 
     LaunchedEffect(showDatePicker) {
         if (showDatePicker) {
@@ -308,6 +308,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
                     calendar.set(year, month, dayOfMonth)
                     val sdf = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
                     selectedDateText = sdf.format(calendar.time) // Update the text to show the selected date
+                    note.date = selectedDateText
                     showDatePicker = false
                 },
                 calendar.get(Calendar.YEAR),
