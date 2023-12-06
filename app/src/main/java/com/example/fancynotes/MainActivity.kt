@@ -44,10 +44,19 @@ import com.google.android.gms.tasks.Task
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
 //import com.example.fancynotes.ui.theme.*
 
 enum class Screen {
-    MAIN_SCREEN, EDIT_SCREEN,
+    MAIN_SCREEN, EDIT_SCREEN, CANVAS_SCREEN
 }
 
 val defaultNotes = arrayOf(
@@ -109,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     when (Current.SCREEN_STATE) {
                         Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainActivity::performGoogleSignIn)
                         Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper, this@MainActivity::performGoogleSignIn)
+                        Screen.CANVAS_SCREEN -> CanvasScreenDisplay(dbHelper = dbHelper, this@MainActivity::performGoogleSignIn)
                     }
                 }
             }
@@ -354,6 +364,14 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             },
             steps = 3,
         )
+
+        Row {
+            Button(onClick = {
+                Current.SCREEN_STATE = Screen.CANVAS_SCREEN
+            }) {
+                Text(text = "Go to Canvas")
+            }
+        }
         Box(modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter) {
             Row {
@@ -386,5 +404,77 @@ fun EditScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
         EditNote(dbHelper, note)
     }
 }
+
+@Composable
+fun CanvasScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
+    val note = when (Current.EDIT_NOTE_INDEX) {
+        EditMode.INSERT -> Note("", "")
+        else -> Current.NOTES[Current.EDIT_NOTE_INDEX]
+    }
+    Column {
+        DrawingCanvas(dbHelper, note)
+    }
+}
+
+@Composable
+fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
+    val lines = remember {
+        mutableStateListOf<Line>()
+    }
+    Column {
+        Canvas(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .pointerInput(true) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consumeAllChanges()
+
+                        val line = Line(
+                            start = change.position - dragAmount,
+                            end = change.position
+                        )
+
+                        lines.add(line)
+                    }
+                }
+        ) {
+            lines.forEach { line ->
+                drawLine(
+                    color = line.color,
+                    start = line.start,
+                    end = line.end,
+                    strokeWidth = line.strokeWidth.toPx(),
+                    cap = StrokeCap.Round
+                )
+            }
+        }
+        Box(modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.BottomCenter) {
+            Row {
+                Button(onClick = {
+                    insertNote(dbHelper, note)
+                    Current.SCREEN_STATE = Screen.EDIT_SCREEN
+                }) {
+                    Text(text = "save")
+                }
+                Spacer(modifier = Modifier.width(medium_dp))
+                Button(onClick = {
+                    Current.SCREEN_STATE = Screen.EDIT_SCREEN
+                }) {
+                    Text(text = "back")
+                }
+            }
+        }
+    }
+
+}
+
+data class Line(
+    val start: Offset,
+    val end: Offset,
+    val color: Color = Color.Black,
+    val strokeWidth: Dp = 1.dp
+)
 
 
