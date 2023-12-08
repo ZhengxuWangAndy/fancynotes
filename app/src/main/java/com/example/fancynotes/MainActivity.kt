@@ -350,7 +350,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
         OutlinedTextField(
             value = content,
             onValueChange = {content = it; note.content = content},
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(300 .dp),
             maxLines = 8,
             singleLine = false
         )
@@ -364,7 +364,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             },
             steps = 3,
         )
-
+        Spacer(modifier = Modifier.height(smaller_dp))
         Row {
             Button(onClick = {
                 Current.SCREEN_STATE = Screen.CANVAS_SCREEN
