@@ -46,6 +46,8 @@ import java.util.Locale
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.consumeAllChanges
@@ -221,6 +223,33 @@ fun MainScreenBottomBar() {
 }
 
 @Composable
+fun SearchBar() {
+    var searchText by remember {
+        mutableStateOf("")
+    }
+    OutlinedTextField(
+        value = searchText,
+        onValueChange = {  searchText = it },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Search Icon"
+            )
+        },
+        placeholder = {
+            Text(
+                text = "Search",
+                color = Color.Gray
+            )
+        }
+    )
+}
+
+@Composable
 fun NoteListDisplay(notes: MutableList<Note>) {
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())
@@ -261,6 +290,8 @@ fun NoteCard(msg: Note, index: Int) {
 fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
     Column {
         MainScreenTopBar(onGoogleSignIn)
+        Spacer(modifier = Modifier.height(smaller_dp))
+        SearchBar()
         Spacer(modifier = Modifier.height(smaller_dp))
         NoteListDisplay(
             Current.NOTES
@@ -350,7 +381,9 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
         OutlinedTextField(
             value = content,
             onValueChange = {content = it; note.content = content},
-            modifier = Modifier.fillMaxWidth().height(300 .dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
             maxLines = 8,
             singleLine = false
         )
