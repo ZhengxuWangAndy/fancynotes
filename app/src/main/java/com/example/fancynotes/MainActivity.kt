@@ -52,6 +52,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -105,9 +106,9 @@ class MainActivity : ComponentActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 handleSignInResult(task)
-                Toast.makeText(this, "LOGIN MORE SUCCESSFUL", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.loginMore, Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(this, "LOGIN SUCCESSFUL", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.login, Toast.LENGTH_SHORT).show()
         }
 
         setContent {
@@ -128,7 +129,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
-        Toast.makeText(this, "LOGIN SUCCESSFUL", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.login, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
@@ -149,7 +150,7 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(medium_dp)) {
-            Text(text = "WhimsiNote", fontSize = 24.sp)
+            Text(text = stringResource(id = R.string.whimsiNote), fontSize = 24.sp)
 
 
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Bottom) {
@@ -160,7 +161,7 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.google),
-                        contentDescription = "Google button"
+                        contentDescription = stringResource(id = R.string.googleBtn)
                     )
                 }
 
@@ -169,7 +170,7 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
                     Icon(
                         painter = painterResource(id = R.drawable.more),
                         tint = Color.White,
-                        contentDescription = "more button"
+                        contentDescription = stringResource(id = R.string.moreBtn)
                     )
                 }
                 DropdownMenu(
@@ -179,19 +180,19 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
                     DropdownMenuItem(onClick = {
                         showMenu = false
                     }) {
-                        Text("Sort by Date")
+                        Text(stringResource(id = R.string.sortDate))
                     }
 
                     DropdownMenuItem(onClick = {
                         showMenu = false
                     }) {
-                        Text("Group by Date")
+                        Text(stringResource(id = R.string.groupDate))
                     }
 
                     DropdownMenuItem(onClick = {
                         showMenu = false
                     }) {
-                        Text("Select Note")
+                        Text(stringResource(id = R.string.selectDate))
                     }
                 }
             }
@@ -208,7 +209,7 @@ fun MainScreenBottomBar() {
             Icon(
                 painter = painterResource(id = R.drawable.add2),
                 tint = Color.Black,
-                contentDescription = "Add Note Button",
+                contentDescription = stringResource(id = R.string.addNote),
                 modifier = Modifier
                     .size(radius_dp, radius_dp)
                     .padding(min_dp)
@@ -223,13 +224,10 @@ fun MainScreenBottomBar() {
 }
 
 @Composable
-fun SearchBar() {
-    var searchText by remember {
-        mutableStateOf("")
-    }
+fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = searchText,
-        onValueChange = {  searchText = it },
+        onValueChange = onSearchTextChanged,
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
@@ -237,25 +235,34 @@ fun SearchBar() {
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Search Icon"
+                contentDescription = stringResource(id = R.string.searchIcon)
             )
         },
         placeholder = {
             Text(
-                text = "Search",
+                text = stringResource(id = R.string.search),
                 color = Color.Gray
             )
         }
     )
 }
 
+
+
 @Composable
-fun NoteListDisplay(notes: MutableList<Note>) {
+fun NoteListDisplay(notes: MutableList<Note>, searchText: String) {
+    val filteredNote = if (searchText.isEmpty()) {
+        notes
+    } else {
+        notes.filter {
+                note -> note.title.contains(searchText, ignoreCase = true)
+        }
+    }
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())
         .padding(smaller_dp)) {
-        for (i in notes.indices) {
-            NoteCard(msg = notes[i], index = i)
+        for (note in filteredNote) {
+            NoteCard(msg = note, index = notes.indexOf(note))
         }
     }
 }
@@ -288,13 +295,14 @@ fun NoteCard(msg: Note, index: Int) {
 
 @Composable
 fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
+    var searchText by remember { mutableStateOf("") }
     Column {
         MainScreenTopBar(onGoogleSignIn)
         Spacer(modifier = Modifier.height(smaller_dp))
-        SearchBar()
+        SearchBar(searchText = searchText, onSearchTextChanged = { searchText = it })
         Spacer(modifier = Modifier.height(smaller_dp))
         NoteListDisplay(
-            Current.NOTES
+            Current.NOTES, searchText = searchText
         )
         Spacer(modifier = Modifier.height(bottom_dp))
         MainScreenBottomBar()
@@ -307,13 +315,13 @@ fun EditNoteTopBar(dbHelper: NoteDbHelper) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(medium_dp)) {
-            Text(text = "Fancy Note", fontSize = 24.sp)
+            Text(text = stringResource(id = R.string.whimsiNote), fontSize = 24.sp)
             Row (modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End ) {
                 Icon(
                     painter = painterResource(id = R.drawable.delete),
                     tint = Color.White,
-                    contentDescription = "Delete Note Button",
+                    contentDescription = stringResource(id = R.string.deleteNote),
                     modifier = Modifier
                         .size(icons_dp, icons_dp)
                         .clickable {
@@ -364,20 +372,20 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
         .padding(medium_dp)) {
         Row {
             Button(onClick = { showDatePicker = true }) {
-                Text(text = "Select Date")
+                Text(text = stringResource(id = R.string.selectDate))
             }
             if (selectedDateText.isNotEmpty()) {
                 Text(text = selectedDateText, modifier = Modifier.padding(start = medium_dp))
             }
         }
-        Text(text = "Title")
+        Text(text = stringResource(id = R.string.title))
         OutlinedTextField(
             value = title,
             onValueChange = {title = it; note.title = title; },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
-        Text(text = "Content", modifier = Modifier.padding(top = medium_dp))
+        Text(text = stringResource(id = R.string.content), modifier = Modifier.padding(top = medium_dp))
         OutlinedTextField(
             value = content,
             onValueChange = {content = it; note.content = content},
@@ -387,7 +395,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             maxLines = 8,
             singleLine = false
         )
-        Text(text = "Priority(1-5)", modifier = Modifier.padding(top = medium_dp))
+        Text(text = stringResource(id = R.string.priority), modifier = Modifier.padding(top = medium_dp))
         Slider(
             value = importanceSlider,
             onValueChange = { importanceSlider = it },
@@ -402,7 +410,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             Button(onClick = {
                 Current.SCREEN_STATE = Screen.CANVAS_SCREEN
             }) {
-                Text(text = "Go to Canvas")
+                Text(text = stringResource(id = R.string.canvas))
             }
         }
         Box(modifier = Modifier.fillMaxSize(),
@@ -412,13 +420,13 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
                     insertNote(dbHelper, note)
                     Current.SCREEN_STATE = Screen.MAIN_SCREEN
                 }) {
-                    Text(text = "save")
+                    Text(stringResource(id = R.string.save))
                 }
                 Spacer(modifier = Modifier.width(medium_dp))
                 Button(onClick = {
                     Current.SCREEN_STATE = Screen.MAIN_SCREEN
                 }) {
-                    Text(text = "back")
+                    Text(stringResource(id = R.string.back))
                 }
             }
         }
@@ -489,13 +497,13 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
                     insertNote(dbHelper, note)
                     Current.SCREEN_STATE = Screen.EDIT_SCREEN
                 }) {
-                    Text(text = "save")
+                    Text(stringResource(id = R.string.save))
                 }
                 Spacer(modifier = Modifier.width(medium_dp))
                 Button(onClick = {
                     Current.SCREEN_STATE = Screen.EDIT_SCREEN
                 }) {
-                    Text(text = "back")
+                    Text(stringResource(id = R.string.back))
                 }
             }
         }

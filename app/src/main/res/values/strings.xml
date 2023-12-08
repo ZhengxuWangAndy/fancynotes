@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">fancynotes</string>
+    <string name="loginMore">LOGIN MORE SUCCESSFUL</string>
+    <string name="login">LOGIN SUCCESSFUL</string>
+    <string name="whimsiNote">WhimsiNote</string>
+    <string name="googleBtn">Google Button</string>
+    <string name="moreBtn">More Button</string>
+    <string name="sortDate">Sort By Date</string>
+    <string name="groupDate">Group By Date</string>
+    <string name="selectDate">Select Date</string>
+    <string name="addNote">Add Note Button</string>
+    <string name="searchIcon">Search Icon</string>
+    <string name="search">Search</string>
+    <string name="deleteNote">Delete Note Button</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="priority">Priority(1 en dash 5)</string>
+    <string name="canvas">Go to Canvas</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+
 </resources>
