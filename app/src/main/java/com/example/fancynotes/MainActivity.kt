@@ -3,6 +3,7 @@ package com.example.fancynotes
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -55,6 +56,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+import android.graphics.Canvas
+import android.graphics.Color as Color2
+import android.graphics.Paint
+import android.graphics.Rect
+import java.io.ByteArrayOutputStream
 
 //import com.example.fancynotes.ui.theme.*
 
@@ -494,6 +501,10 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
             contentAlignment = Alignment.BottomCenter) {
             Row {
                 Button(onClick = {
+                    // Save the drawing as an image
+                    val imageBytes = saveCanvasAsImage(lines)
+                    // Update the 'image' property of the note
+                    note.image = imageBytes
                     insertNote(dbHelper, note)
                     Current.SCREEN_STATE = Screen.EDIT_SCREEN
                 }) {
@@ -511,6 +522,28 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
 
 }
 
+fun saveCanvasAsImage(lines: List<Line>): ByteArray? {
+    val bitmap = Bitmap.createBitmap(800, 800, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    canvas.drawColor(Color2.WHITE)
+    val paint = Paint().apply {
+        isAntiAlias = true
+        color = Color2.BLACK
+        strokeWidth = 5f
+    }
+    lines.forEach { line ->
+        canvas.drawLine(
+            line.start.x,
+            line.start.y,
+            line.end.x,
+            line.end.y,
+            paint
+        )
+    }
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    return byteArrayOutputStream.toByteArray()
+}
 data class Line(
     val start: Offset,
     val end: Offset,

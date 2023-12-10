@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 import android.util.Log
+import java.sql.Blob
 import kotlin.math.abs
 
 
@@ -147,7 +148,10 @@ fun insertNote(dbHelper: NoteDbHelper, note: Note) {
         put(FeedEntry.COLUMN_NAME_CONTENT, note.content)
         put(FeedEntry.COLUMN_NAME_IMPORTANCE, note.importance)
         put(FeedEntry.COLUMN_NAME_DATE, note.date)
-        put(FeedEntry.COLUMN_NAME_IMAGE, note.image)
+
+        note.image?.let {
+            put(FeedEntry.COLUMN_NAME_IMAGE, it)
+        }
     }
 
     if (note.id == SelectResult.NOT_FOUND) {
@@ -180,6 +184,10 @@ fun updateNote(dbHelper: NoteDbHelper, note: Note) {
         put(FeedEntry.COLUMN_NAME_CONTENT, note.content)
         put(FeedEntry.COLUMN_NAME_IMPORTANCE, note.importance)
         put(FeedEntry.COLUMN_NAME_DATE, note.date)
+
+        note.image?.let {
+            put(FeedEntry.COLUMN_NAME_IMAGE, it)
+        }
     }
     val selection = "${BaseColumns._ID} = ?"
     val selectionArgs = arrayOf(note.id.toString())
