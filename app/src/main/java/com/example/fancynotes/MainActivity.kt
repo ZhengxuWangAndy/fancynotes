@@ -62,6 +62,8 @@ import android.graphics.Color as Color2
 import android.graphics.Paint
 import android.graphics.Rect
 import java.io.ByteArrayOutputStream
+import androidx.activity.compose.BackHandler
+
 
 //import com.example.fancynotes.ui.theme.*
 
@@ -271,6 +273,7 @@ fun NoteListDisplay(notes: MutableList<Note>, searchText: String) {
     } else {
         notes.filter {
                 note -> note.title.contains(searchText, ignoreCase = true)
+                || note.content.contains(searchText, ignoreCase = true)
         }
     }
     val sortedNotes = when (Current.SORT_OPTION) {
@@ -315,6 +318,11 @@ fun NoteCard(msg: Note, index: Int) {
 @Composable
 fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
     var searchText by remember { mutableStateOf("") }
+
+    BackHandler(onBack = {
+        Current.SCREEN_STATE = Screen.MAIN_SCREEN
+    })
+
     Column {
         MainScreenTopBar(onGoogleSignIn)
         Spacer(modifier = Modifier.height(smaller_dp))
