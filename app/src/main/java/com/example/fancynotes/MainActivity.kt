@@ -75,11 +75,17 @@ val defaultNotes = arrayOf(
     Note("Example", "What to eat?","Mon, Dec 4, 2023"),
 )
 
+enum class SortOption {
+    DATE, PRIORITY
+}
 object Current {
     var SCREEN_STATE by mutableStateOf(Screen.MAIN_SCREEN)
     var EDIT_NOTE_INDEX by mutableStateOf(EditMode.INSERT)
     var NOTES = mutableListOf<Note>()
+    var SORT_OPTION by mutableStateOf(SortOption.DATE)
 }
+
+
 
 class MainActivity : ComponentActivity() {
     private val dbHelper = NoteDbHelper(this)
@@ -186,21 +192,23 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
                 ) {
                     DropdownMenuItem(onClick = {
                         showMenu = false
+                        Current.SORT_OPTION = SortOption.DATE
                     }) {
                         Text(stringResource(id = R.string.sortDate))
                     }
 
                     DropdownMenuItem(onClick = {
                         showMenu = false
+                        Current.SORT_OPTION = SortOption.PRIORITY
                     }) {
-                        Text(stringResource(id = R.string.groupDate))
+                        Text(stringResource(id = R.string.sortPriority))
                     }
 
-                    DropdownMenuItem(onClick = {
-                        showMenu = false
-                    }) {
-                        Text(stringResource(id = R.string.selectDate))
-                    }
+//                    DropdownMenuItem(onClick = {
+//                        showMenu = false
+//                    }) {
+//                        Text(stringResource(id = R.string.selectDate))
+//                    }
                 }
             }
         }
@@ -265,10 +273,14 @@ fun NoteListDisplay(notes: MutableList<Note>, searchText: String) {
                 note -> note.title.contains(searchText, ignoreCase = true)
         }
     }
+    val sortedNotes = when (Current.SORT_OPTION) {
+        SortOption.DATE -> filteredNote.sortedBy { it.date }
+        SortOption.PRIORITY -> filteredNote.sortedByDescending { it.importance }
+    }
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())
         .padding(smaller_dp)) {
-        for (note in filteredNote) {
+        for (note in sortedNotes) {
             NoteCard(msg = note, index = notes.indexOf(note))
         }
     }

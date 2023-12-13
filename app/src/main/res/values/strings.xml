@@ -6,7 +6,7 @@
     <string name="googleBtn">Google Button</string>
     <string name="moreBtn">More Button</string>
     <string name="sortDate">Sort By Date</string>
-    <string name="groupDate">Group By Date</string>
+    <string name="sortPriority">Sort By Priority</string>
     <string name="selectDate">Select Date</string>
     <string name="addNote">Add Note Button</string>
     <string name="searchIcon">Search Icon</string>
