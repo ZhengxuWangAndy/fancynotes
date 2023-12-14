@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -60,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import android.graphics.Canvas
 import android.graphics.Color as Color2
 import android.graphics.Paint
-import android.graphics.Rect
 import java.io.ByteArrayOutputStream
 import androidx.activity.compose.BackHandler
 
@@ -136,7 +134,7 @@ class MainActivity : ComponentActivity() {
                     when (Current.SCREEN_STATE) {
                         Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainActivity::performGoogleSignIn)
                         Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper, this@MainActivity::performGoogleSignIn)
-                        Screen.CANVAS_SCREEN -> CanvasScreenDisplay(dbHelper = dbHelper, this@MainActivity::performGoogleSignIn)
+                        Screen.CANVAS_SCREEN -> CanvasScreenDisplay(dbHelper = dbHelper)
                     }
                 }
             }
@@ -418,7 +416,7 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             onValueChange = {content = it; note.content = content},
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp),
+                .height(200.dp),
             maxLines = 8,
             singleLine = false
         )
@@ -433,13 +431,14 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
             steps = 3,
         )
         Spacer(modifier = Modifier.height(smaller_dp))
-        Row {
-            Button(onClick = {
-                Current.SCREEN_STATE = Screen.CANVAS_SCREEN
-            }) {
-                Text(text = stringResource(id = R.string.canvas))
-            }
-        }
+//        Row {
+//            Button(onClick = {
+//                Current.SCREEN_STATE = Screen.CANVAS_SCREEN
+//            }) {
+//                Text(text = stringResource(id = R.string.canvas))
+//            }
+//        }
+        CanvasScreenDisplay(dbHelper)
         Box(modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter) {
             Row {
@@ -460,6 +459,8 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
     }
 }
 
+
+
 @Composable
 fun EditScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
     val note = when (Current.EDIT_NOTE_INDEX) {
@@ -471,15 +472,16 @@ fun EditScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
         Spacer(modifier = Modifier.height(smaller_dp))
         EditNote(dbHelper, note)
     }
+
 }
 
 @Composable
-fun CanvasScreenDisplay(dbHelper: NoteDbHelper, onGoogleSignIn: () -> Unit) {
+fun CanvasScreenDisplay(dbHelper: NoteDbHelper) {
     val note = when (Current.EDIT_NOTE_INDEX) {
         EditMode.INSERT -> Note("", "")
         else -> Current.NOTES[Current.EDIT_NOTE_INDEX]
     }
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         DrawingCanvas(dbHelper, note)
     }
 }
@@ -493,7 +495,9 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
         Canvas(
             modifier = Modifier
                 .weight(1f)
+                .background(Color.White)
                 .fillMaxWidth()
+                .height(100.dp)
                 .pointerInput(true) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()

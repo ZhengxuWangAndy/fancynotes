@@ -14,9 +14,9 @@
     <string name="deleteNote">Delete Note Button</string>
     <string name="title">Title</string>
     <string name="content">Content</string>
-    <string name="priority">Priority(1 en dash 5)</string>
-    <string name="canvas">Go to Canvas</string>
+    <string name="priority">Priority(1-5)</string>
+<!--    <string name="canvas">Go to Canvas</string>-->
     <string name="save">Save</string>
     <string name="back">Back</string>
-
+    <string name="canvas">Draw Something!</string>
 </resources>
