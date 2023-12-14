@@ -2,6 +2,8 @@ package com.example.fancynotes
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.ContentProvider
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -439,23 +441,23 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
 //            }
 //        }
         CanvasScreenDisplay(dbHelper)
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter) {
-            Row {
-                Button(onClick = {
-                    insertNote(dbHelper, note)
-                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
-                }) {
-                    Text(stringResource(id = R.string.save))
-                }
-                Spacer(modifier = Modifier.width(medium_dp))
-                Button(onClick = {
-                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
-                }) {
-                    Text(stringResource(id = R.string.back))
-                }
-            }
-        }
+//        Box(modifier = Modifier.fillMaxSize(),
+//            contentAlignment = Alignment.BottomCenter) {
+//            Row {
+//                Button(onClick = {
+//                    insertNote(dbHelper, note)
+//                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
+//                }) {
+//                    Text(stringResource(id = R.string.save))
+//                }
+//                Spacer(modifier = Modifier.width(medium_dp))
+//                Button(onClick = {
+//                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
+//                }) {
+//                    Text(stringResource(id = R.string.back))
+//                }
+//            }
+//        }
     }
 }
 
@@ -495,7 +497,7 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
         Canvas(
             modifier = Modifier
                 .weight(1f)
-                .background(Color.White)
+                .background(Color.DarkGray)
                 .fillMaxWidth()
                 .height(100.dp)
                 .pointerInput(true) {
@@ -530,13 +532,13 @@ fun DrawingCanvas(dbHelper: NoteDbHelper, note: Note) {
                     // Update the 'image' property of the note
                     note.image = imageBytes
                     insertNote(dbHelper, note)
-                    Current.SCREEN_STATE = Screen.EDIT_SCREEN
+                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
                 }) {
                     Text(stringResource(id = R.string.save))
                 }
                 Spacer(modifier = Modifier.width(medium_dp))
                 Button(onClick = {
-                    Current.SCREEN_STATE = Screen.EDIT_SCREEN
+                    Current.SCREEN_STATE = Screen.MAIN_SCREEN
                 }) {
                     Text(stringResource(id = R.string.back))
                 }
