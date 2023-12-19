@@ -116,8 +116,6 @@ class MainScreenActivity : ComponentActivity() {
                 }
             }
         }
-
-
     }
 
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
@@ -213,7 +211,6 @@ fun MainScreenBottomBar() {
                         CurrentMain.SCREEN_STATE = Screen.EDIT_SCREEN
                     }
             )
-
         }
     }
 }
@@ -315,6 +312,3 @@ fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
         MainScreenBottomBar()
     }
 }
-
-
-

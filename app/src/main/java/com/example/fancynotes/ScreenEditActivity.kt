@@ -208,6 +208,4 @@ fun EditScreenDisplay(dbHelper: NoteDbHelper, editScreenActivity: EditScreenActi
         Spacer(modifier = Modifier.height(smaller_dp))
         EditNote(dbHelper, note)
     }
-
 }
-
