@@ -9,10 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.fancynotes">
+
         <activity
-            android:name="com.example.fancynotes.MainActivity"
+            android:name=".MainScreenActivity"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="@string/title_activity_main_screen"
             android:theme="@style/Theme.fancynotes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +21,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".EditScreenActivity"
+            android:exported="false"
+            android:label="@string/title_activity_edit_screen"
+            android:theme="@style/Theme.fancynotes"
+            />
+
+        <activity
+            android:name=".ScreenCanvasHCRActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.fancynotes"
+            />
+
     </application>
 
 </manifest>
