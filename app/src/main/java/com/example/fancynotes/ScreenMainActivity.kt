@@ -80,7 +80,7 @@ class MainScreenActivity : ComponentActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        CurrentMain.NOTES = queryAllNote(dbHelper)
+        CurrentMain.NOTES = queryAllNote(dbHelper, CurrentMain.SORT_OPTION)
         if (CurrentMain.NOTES.isEmpty()) {
 
             for(note in defaultNotes) {
@@ -106,7 +106,7 @@ class MainScreenActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 androidx.compose.material.Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material.MaterialTheme.colors.background) {
 
-                    CurrentMain.NOTES = queryAllNote(dbHelper)
+                    CurrentMain.NOTES = queryAllNote(dbHelper, CurrentMain.SORT_OPTION)
 
                     when (CurrentMain.SCREEN_STATE) {
                         Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainScreenActivity::performGoogleSignIn)

@@ -9,6 +9,9 @@ import android.util.Log
 import java.sql.Blob
 import kotlin.math.abs
 
+import com.example.fancynotes.SortOption
+
+
 
 object EditMode {
     const val INSERT = -1
@@ -78,9 +81,14 @@ class NoteDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
 }
 
 
-fun queryAllNote(dbHelper: NoteDbHelper): MutableList<Note> {
+fun queryAllNote(dbHelper: NoteDbHelper, option: SortOption): MutableList<Note> {
     val db = dbHelper.readableDatabase
     val sortOrder = "${FeedEntry.COLUMN_NAME_IMPORTANCE} DESC"
+    if(option == SortOption.DATE){
+        val sortOrder = "${FeedEntry.COLUMN_NAME_DATE} DESC"
+    }else {
+        val sortOrder = "${FeedEntry.COLUMN_NAME_IMPORTANCE} DESC"
+    }
     val cursor = db.query(
         FeedEntry.TABLE_NAME,
         null,

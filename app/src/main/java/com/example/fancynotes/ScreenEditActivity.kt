@@ -57,7 +57,7 @@ class EditScreenActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 androidx.compose.material.Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material.MaterialTheme.colors.background) {
 
-                    CurrentMain.NOTES = queryAllNote(dbHelper)
+                    CurrentMain.NOTES = queryAllNote(dbHelper, CurrentMain.SORT_OPTION)
 
                     when (CurrentMain.SCREEN_STATE) {
                         Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper, this@EditScreenActivity)
