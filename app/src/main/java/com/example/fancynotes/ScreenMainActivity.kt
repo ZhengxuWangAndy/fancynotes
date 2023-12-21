@@ -1,6 +1,7 @@
 package com.example.fancynotes
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -32,6 +33,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -62,6 +64,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import java.util.Locale
 
 
 class MainScreenActivity : ComponentActivity() {
@@ -109,7 +112,8 @@ class MainScreenActivity : ComponentActivity() {
                     CurrentMain.NOTES = queryAllNote(dbHelper, CurrentMain.SORT_OPTION)
 
                     when (CurrentMain.SCREEN_STATE) {
-                        Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainScreenActivity::performGoogleSignIn)
+                        Screen.MAIN_SCREEN -> MainScreenDisplay(this@MainScreenActivity::performGoogleSignIn,
+                            onLanguageToggle = { toggleLanguage() })
                         Screen.EDIT_SCREEN -> EditScreenDisplay(dbHelper, EditScreenActivity())
                         else -> {}
                     }
@@ -131,11 +135,27 @@ class MainScreenActivity : ComponentActivity() {
         val signInIntent = googleSignInClient.signInIntent
         signInResultLauncher.launch(signInIntent)
     }
+
+    private fun toggleLanguage() {
+        val newLocale = if (Locale.getDefault().language == "en") Locale("zh", "CN") else Locale("en")
+        Locale.setDefault(newLocale)
+        val config = resources.configuration
+        val context: Context = createConfigurationContext(config)
+        config.setLocale(newLocale)
+        resources.updateConfiguration(config, resources.displayMetrics)
+        applicationContext.resources.updateConfiguration(config, resources.displayMetrics)
+
+        // Restarting the current activity to apply the new language settings
+        val restartIntent = Intent(this, MainScreenActivity::class.java)
+        finish()
+        startActivity(restartIntent)
+    }
 }
 
 @Composable
-fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
+fun MainScreenTopBar(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
+
     TopAppBar {
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -181,11 +201,12 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit) {
                         androidx.compose.material.Text(stringResource(id = R.string.sortPriority))
                     }
 
-//                    DropdownMenuItem(onClick = {
-//                        showMenu = false
-//                    }) {
-//                        Text(stringResource(id = R.string.selectDate))
-//                    }
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                        onLanguageToggle()
+                    }) {
+                        Text(stringResource(id = R.string.switch_language))
+                    }
                 }
             }
         }
@@ -293,7 +314,7 @@ fun NoteCard(msg: Note, index: Int) {
 
 
 @Composable
-fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
+fun MainScreenDisplay(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     var searchText by remember { mutableStateOf("") }
 
     BackHandler(onBack = {
@@ -301,7 +322,7 @@ fun MainScreenDisplay(onGoogleSignIn: () -> Unit) {
     })
 
     Column {
-        MainScreenTopBar(onGoogleSignIn)
+        MainScreenTopBar(onGoogleSignIn, onLanguageToggle)
         Spacer(modifier = Modifier.height(smaller_dp))
         SearchBar(searchText = searchText, onSearchTextChanged = { searchText = it })
         Spacer(modifier = Modifier.height(smaller_dp))

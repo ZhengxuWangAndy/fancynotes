@@ -33,21 +33,21 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="downloadClick"
-                    android:text="Download" />
+                    android:text="@string/download_button_label" />
                 <Button
                     android:id="@+id/recognize_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="recognizeClick"
-                    android:text="Recognize" />
+                    android:text="@string/recognize_button_label" />
                 <Button
                     android:id="@+id/clear_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="clearClick"
-                    android:text="Clear" />
+                    android:text="@string/clear_button_label" />
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="deleteClick"
-                android:text="Delete model" />
+                android:text="@string/delete_model_button_label" />
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

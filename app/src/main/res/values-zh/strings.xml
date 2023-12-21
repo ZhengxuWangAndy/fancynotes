@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">精致笔记</string>
+    <string name="loginMore">登录更成功</string>
+    <string name="login">登录成功</string>
+    <string name="whimsiNote">异想笔记</string>
+    <string name="googleBtn">谷歌按钮</string>
+    <string name="moreBtn">更多按钮</string>
+    <string name="sortDate">按日期排序</string>
+    <string name="sortPriority">按优先级排序</string>
+    <string name="selectDate">选择日期</string>
+    <string name="addNote">添加笔记按钮</string>
+    <string name="searchIcon">搜索图标</string>
+    <string name="search">搜索</string>
+    <string name="deleteNote">删除笔记按钮</string>
+    <string name="title">标题</string>
+    <string name="content">内容</string>
+    <string name="priority">优先级(1–5)</string>
+    <string name="save">保存</string>
+    <string name="back">返回</string>
+    <string name="canvas">画点什么!</string>
+    <string name="title_activity_main_screen">主屏幕活动</string>
+    <string name="title_activity_edit_screen">编辑屏幕活动</string>
+    <string name="switch_language">切换成英文</string>
+    <string name="download_button_label">下载</string>
+    <string name="recognize_button_label">识别</string>
+    <string name="clear_button_label">清除</string>
+    <string name="delete_model_button_label">删除模型</string>
+</resources>

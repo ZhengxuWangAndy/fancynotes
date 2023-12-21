@@ -14,11 +14,15 @@
     <string name="deleteNote">Delete Note Button</string>
     <string name="title">Title</string>
     <string name="content">Content</string>
-    <string name="priority">Priority(1-5)</string>
-    <!--    <string name="canvas">Go to Canvas</string>-->
+    <string name="priority">Priority(1–5)</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
     <string name="canvas">Draw Something!</string>
     <string name="title_activity_main_screen">MainScreenActivity</string>
     <string name="title_activity_edit_screen">EditScreenActivity</string>
+    <string name="switch_language">Switch Language</string>
+    <string name="download_button_label">Download</string>
+    <string name="recognize_button_label">Recognize</string>
+    <string name="clear_button_label">Clear</string>
+    <string name="delete_model_button_label">Delete Model</string>
 </resources>
