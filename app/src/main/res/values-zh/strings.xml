@@ -26,4 +26,5 @@
     <string name="recognize_button_label">识别</string>
     <string name="clear_button_label">清除</string>
     <string name="delete_model_button_label">删除模型</string>
+    <string name="changeColor">改变颜色</string>
 </resources>

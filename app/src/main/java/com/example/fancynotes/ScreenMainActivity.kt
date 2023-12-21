@@ -155,8 +155,10 @@ class MainScreenActivity : ComponentActivity() {
 @Composable
 fun MainScreenTopBar(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
-
-    TopAppBar {
+    var backgroundColor by remember {
+        mutableStateOf(Color.LightGray)
+    }
+    TopAppBar(backgroundColor = backgroundColor) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(medium_dp)) {
@@ -206,6 +208,12 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
                         onLanguageToggle()
                     }) {
                         Text(stringResource(id = R.string.switch_language))
+                    }
+                    DropdownMenuItem(onClick = {
+                        backgroundColor = Color.Green
+                        showMenu = false
+                    }) {
+                        Text(stringResource(id = R.string.changeColor))
                     }
                 }
             }
