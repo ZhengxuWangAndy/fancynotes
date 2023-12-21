@@ -66,7 +66,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import java.util.Locale
 
-
+/**
+ * Main activity for the application's main screen.
+ */
 class MainScreenActivity : ComponentActivity() {
     private val dbHelper = NoteDbHelper(this)
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -75,7 +77,7 @@ class MainScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Login
+        // Google Sign-In setup and other initializations.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("HELLO")
             .requestEmail()
@@ -104,7 +106,7 @@ class MainScreenActivity : ComponentActivity() {
         }
 
         setContent {
-
+            // UI setup for the main screen with Jetpack Compose.
             fancyTheme {
                 // A surface container using the 'background' color from the theme
                 androidx.compose.material.Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material.MaterialTheme.colors.background) {
@@ -122,20 +124,31 @@ class MainScreenActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Handles the result of the Google sign-in process.
+     * @param task The task containing the GoogleSignInAccount.
+     */
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
         Toast.makeText(this, R.string.login, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
+        // Close database helper on activity destruction.
         dbHelper.close()
         super.onDestroy()
     }
 
+    /**
+     * Initiates the Google sign-in process.
+     */
     fun performGoogleSignIn() {
         val signInIntent = googleSignInClient.signInIntent
         signInResultLauncher.launch(signInIntent)
     }
 
+    /**
+     * Toggles the application language between English and Chinese.
+     */
     private fun toggleLanguage() {
         val newLocale = if (Locale.getDefault().language == "en") Locale("zh", "CN") else Locale("en")
         Locale.setDefault(newLocale)
@@ -152,6 +165,11 @@ class MainScreenActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Composable function for the top bar of the main screen.
+ * @param onGoogleSignIn Function to call when the Google Sign-In button is clicked.
+ * @param onLanguageToggle Function to call when the language toggle option is selected.
+ */
 @Composable
 fun MainScreenTopBar(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
@@ -222,7 +240,9 @@ fun MainScreenTopBar(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     }
 }
 
-
+/**
+ * Composable function for the bottom bar of the main screen.
+ */
 @Composable
 fun MainScreenBottomBar() {
     BottomAppBar(backgroundColor = White){
@@ -244,7 +264,11 @@ fun MainScreenBottomBar() {
     }
 }
 
-
+/**
+ * Composable function for the search bar.
+ * @param searchText The current text in the search bar.
+ * @param onSearchTextChanged Function to call when the text in the search bar changes.
+ */
 @Composable
 fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
     OutlinedTextField(
@@ -269,7 +293,11 @@ fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
     )
 }
 
-
+/**
+ * Composable function to display a list of notes.
+ * @param notes The list of notes to display.
+ * @param searchText The current search text to filter notes.
+ */
 @Composable
 fun NoteListDisplay(notes: MutableList<Note>, searchText: String) {
     val filteredNote = if (searchText.isEmpty()) {
@@ -293,7 +321,11 @@ fun NoteListDisplay(notes: MutableList<Note>, searchText: String) {
     }
 }
 
-
+/**
+ * Composable function for a single note card in the list.
+ * @param msg The note to display in the card.
+ * @param index The index of the note in the list.
+ */
 @Composable
 fun NoteCard(msg: Note, index: Int) {
     Row(modifier = Modifier
@@ -320,7 +352,11 @@ fun NoteCard(msg: Note, index: Int) {
     }
 }
 
-
+/**
+ * Composable function for the entire main screen display.
+ * @param onGoogleSignIn Function to call for Google Sign-In.
+ * @param onLanguageToggle Function to call for toggling the language.
+ */
 @Composable
 fun MainScreenDisplay(onGoogleSignIn: () -> Unit, onLanguageToggle: () -> Unit) {
     var searchText by remember { mutableStateOf("") }

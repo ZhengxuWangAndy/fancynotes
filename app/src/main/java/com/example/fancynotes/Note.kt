@@ -11,31 +11,40 @@ import kotlin.math.abs
 
 import com.example.fancynotes.SortOption
 
-
-
+/**
+ * Defines the edit mode states for notes.
+ */
 object EditMode {
     const val INSERT = -1
 }
 
+/**
+ * Defines constants for select query results.
+ */
 object SelectResult {
     const val NOT_FOUND: Long = -1
 }
 
-
+/**
+ * Represents a note with properties like title, content, importance, id, date, and an optional image.
+ */
 class Note (var title: String, var content: String, var importance: Int, var id: Long, var date: String, var image: ByteArray?) {
 
-
+    // Various secondary constructors for creating a note with different sets of parameters.
     constructor(title: String, content: String, importance: Int, date: String) : this(title, content, importance, -1, date, null) {}
     constructor(title: String, content: String, date: String) : this(title, content, 0, -1, date, null) {}
     constructor(title: String, importance: Int, date: String) : this(title, "", importance, -1, date, null) {}
     constructor(title: String, date: String) : this(title, "", 0, -1, date, null) {}
 
+    // Ensures that the importance value is always within the range 0-4.
     init {
         importance = abs((importance) % 5)
     }
 }
 
-
+/**
+ * Defines the schema for the notes table in the database.
+ */
 object FeedEntry : BaseColumns {
     const val TABLE_NAME = "note"
     const val COLUMN_NAME_TITLE = "title"
@@ -57,9 +66,12 @@ private const val SQL_CREATE_ENTRIES =
     "${FeedEntry.COLUMN_NAME_IMAGE} BLOB)"
 
 
+// SQL command to create the notes table.
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${FeedEntry.TABLE_NAME}"
 
-
+/**
+ * Helper class for managing database creation and version management for notes.
+ */
 class NoteDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         const val DATABASE_VERSION = 3
@@ -80,7 +92,12 @@ class NoteDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
     }
 }
 
-
+/**
+ * Retrieves all notes from the database sorted based on the specified option.
+ * @param dbHelper The database helper used to access the database.
+ * @param option The sorting option (either by date or importance).
+ * @return A mutable list of Note objects.
+ */
 fun queryAllNote(dbHelper: NoteDbHelper, option: SortOption): MutableList<Note> {
     val db = dbHelper.readableDatabase
     val sortOrder = "${FeedEntry.COLUMN_NAME_IMPORTANCE} DESC"
@@ -118,7 +135,12 @@ fun queryAllNote(dbHelper: NoteDbHelper, option: SortOption): MutableList<Note> 
     return notes
 }
 
-// 获取数据的主键 ID
+/**
+ * Retrieves the primary key ID of a note based on its title.
+ * @param dbHelper The database helper used to access the database.
+ * @param title The title of the note.
+ * @return The primary key ID of the note or NOT_FOUND if not found.
+ */
 fun getID(dbHelper: NoteDbHelper, title: String): Long {
     val db = dbHelper.readableDatabase
     val projection = arrayOf(BaseColumns._ID, FeedEntry.COLUMN_NAME_TITLE)
@@ -145,7 +167,11 @@ fun getID(dbHelper: NoteDbHelper, title: String): Long {
     return itemId
 }
 
-
+/**
+ * Inserts a new note into the database or updates it if it already exists.
+ * @param dbHelper The database helper used to access the database.
+ * @param note The note object to be inserted or updated.
+ */
 fun insertNote(dbHelper: NoteDbHelper, note: Note) {
     // Gets the data repository in write mode
     val db = dbHelper.writableDatabase
@@ -174,7 +200,11 @@ fun insertNote(dbHelper: NoteDbHelper, note: Note) {
     }
 }
 
-
+/**
+ * Deletes a note from the database based on its ID.
+ * @param dbHelper The database helper used to access the database.
+ * @param id The primary key ID of the note to be deleted.
+ */
 fun deleteNote(dbHelper: NoteDbHelper, id: Long) {
     Log.d("delete id = ", id.toString())
     val db = dbHelper.writableDatabase
@@ -183,7 +213,11 @@ fun deleteNote(dbHelper: NoteDbHelper, id: Long) {
     val deletedRows = db.delete(FeedEntry.TABLE_NAME, selection, selectionArgs)
 }
 
-
+/**
+ * Updates an existing note in the database.
+ * @param dbHelper The database helper used to access the database.
+ * @param note The note object containing updated information.
+ */
 fun updateNote(dbHelper: NoteDbHelper, note: Note) {
     Log.d("update id = ", note.id.toString())
     val db = dbHelper.writableDatabase

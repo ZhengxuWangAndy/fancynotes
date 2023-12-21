@@ -14,11 +14,16 @@ import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collec
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableSortedSet
 import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier
 
-
+/**
+ * Activity for handling the canvas screen and Handwriting Recognition (HCR) using Digital Ink Recognizer.
+ */
 class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedModelsChangedListener {
 
+    // Stroke manager for handling the drawing and recognition process.
     @JvmField @VisibleForTesting
     val strokeManager = StrokeManager()
+
+    // Adapter for the language selection spinner.
     private lateinit var languageAdapter: ArrayAdapter<ModelLanguageContainer>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,24 +62,39 @@ class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedMod
         strokeManager.reset()
     }
 
+    /**
+     * Initiates the download of the active model in the stroke manager.
+     */
     fun downloadClick(v: View?) {
         strokeManager.download()
     }
 
+    /**
+     * Initiates recognition of the current ink strokes in the stroke manager.
+     */
     fun recognizeClick(v: View?) {
         strokeManager.recognize()
     }
 
+    /**
+     * Clears the current ink strokes in the drawing view and resets the stroke manager.
+     */
     fun clearClick(v: View?) {
         strokeManager.reset()
         val drawingView = findViewById<DrawingView>(R.id.drawing_view)
         drawingView.clear()
     }
 
+    /**
+     * Deletes the currently active model in the stroke manager.
+     */
     fun deleteClick(v: View?) {
         strokeManager.deleteActiveModel()
     }
 
+    /**
+     * Nested class for handling language model containers.
+     */
     private class ModelLanguageContainer
     private constructor(private val label: String, val languageTag: String?) :
         Comparable<ModelLanguageContainer> {
@@ -107,6 +127,9 @@ class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedMod
         }
     }
 
+    /**
+     * Populates and returns an adapter with language models for the spinner.
+     */
     private fun populateLanguageAdapter(): ArrayAdapter<ModelLanguageContainer> {
         val languageAdapter =
             ArrayAdapter<ModelLanguageContainer>(this, android.R.layout.simple_spinner_item)
@@ -143,6 +166,9 @@ class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedMod
         return languageAdapter
     }
 
+    /**
+     * Builds and returns a ModelLanguageContainer based on a DigitalInkRecognitionModelIdentifier.
+     */
     private fun buildModelContainer(
         modelIdentifier: DigitalInkRecognitionModelIdentifier,
         labelSuffix: String
@@ -161,6 +187,9 @@ class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedMod
         )
     }
 
+    /**
+     * Callback when downloaded models are changed.
+     */
     override fun onDownloadedModelsChanged(downloadedLanguageTags: Set<String>) {
         for (i in 0 until languageAdapter.count) {
             val container = languageAdapter.getItem(i)!!
@@ -171,6 +200,8 @@ class ScreenCanvasHCRActivity : ComponentActivity(), StrokeManager.DownloadedMod
 
     companion object {
         private const val TAG = "MLKDI.Activity"
+
+        // Map for non-text models.
         private val NON_TEXT_MODELS =
             ImmutableMap.of(
                 "zxx-Zsym-x-autodraw",

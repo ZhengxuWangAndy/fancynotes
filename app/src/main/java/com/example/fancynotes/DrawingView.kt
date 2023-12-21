@@ -35,10 +35,17 @@ class DrawingView @JvmOverloads constructor(
     private lateinit var drawCanvas: Canvas
     private lateinit var canvasBitmap: Bitmap
     private lateinit var strokeManager: StrokeManager
+
+    /**
+     * Sets the StrokeManager instance for handling stroke data.
+     */
     fun setStrokeManager(strokeManager: StrokeManager) {
         this.strokeManager = strokeManager
     }
 
+    /**
+     * Handles size changes for the view, creating a new canvas and bitmap with the new size.
+     */
     override fun onSizeChanged(
         width: Int,
         height: Int,
@@ -51,6 +58,9 @@ class DrawingView @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Redraws the entire content based on the current ink and recognized strokes.
+     */
     fun redrawContent() {
         clear()
         val currentInk = strokeManager.currentInk
@@ -64,6 +74,9 @@ class DrawingView @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Draws the given text into a specified bounding box using the provided text paint.
+     */
     private fun drawTextIntoBoundingBox(text: String, bb: Rect, textPaint: TextPaint) {
         val arbitraryFixedSize = 20f
         // Set an arbitrary text size to learn how high the text will be.
@@ -88,12 +101,18 @@ class DrawingView @JvmOverloads constructor(
         drawCanvas.drawText(text, bb.left.toFloat(), bb.bottom.toFloat(), textPaint)
     }
 
+    /**
+     * Draws ink on the canvas with the specified paint.
+     */
     private fun drawInk(ink: Ink, paint: Paint) {
         for (s in ink.strokes) {
             drawStroke(s, paint)
         }
     }
 
+    /**
+     * Draws a single stroke on the canvas.
+     */
     private fun drawStroke(s: Stroke, paint: Paint) {
         Log.i(TAG, "drawstroke")
         var path: Path = Path()
@@ -104,6 +123,9 @@ class DrawingView @JvmOverloads constructor(
         drawCanvas.drawPath(path, paint)
     }
 
+    /**
+     * Clears the current drawing.
+     */
     fun clear() {
         currentStroke.reset()
         onSizeChanged(
@@ -114,11 +136,17 @@ class DrawingView @JvmOverloads constructor(
         )
     }
 
+    /**
+     * Handles the drawing of the bitmap and the current stroke on the canvas.
+     */
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(canvasBitmap, 0f, 0f, canvasPaint)
         canvas.drawPath(currentStroke, currentStrokePaint)
     }
 
+    /**
+     * Handles touch events to draw strokes and pass touch events to the stroke manager.
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
         val x = event.x
@@ -139,6 +167,9 @@ class DrawingView @JvmOverloads constructor(
         return true
     }
 
+    /**
+     * Callback for when the content changes, triggering a redraw.
+     */
     override fun onContentChanged() {
         redrawContent()
     }
@@ -150,6 +181,10 @@ class DrawingView @JvmOverloads constructor(
         private const val MIN_BB_HEIGHT = 10
         private const val MAX_BB_WIDTH = 256
         private const val MAX_BB_HEIGHT = 256
+
+        /**
+         * Computes the bounding box for a given ink.
+         */
         private fun computeBoundingBox(ink: Ink): Rect {
             var top = Float.MAX_VALUE
             var left = Float.MAX_VALUE

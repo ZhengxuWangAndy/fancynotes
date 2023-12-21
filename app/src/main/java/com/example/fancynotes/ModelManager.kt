@@ -19,6 +19,13 @@ class ModelManager {
     private var model: DigitalInkRecognitionModel? = null
     var recognizer: DigitalInkRecognizer? = null
     val remoteModelManager = RemoteModelManager.getInstance()
+
+    /**
+     * Sets the model based on the provided language tag.
+     * Clears any existing model and recognizer, and initializes new ones.
+     * @param languageTag The language tag for the model.
+     * @return A message indicating the outcome of setting the model.
+     */
     fun setModel(languageTag: String): String {
         // Clear the old model and recognizer.
         model = null
@@ -48,10 +55,18 @@ class ModelManager {
         return "Model set for language: $languageTag"
     }
 
+    /**
+     * Checks if the current model has been downloaded.
+     * @return A task indicating if the model is downloaded or not.
+     */
     fun checkIsModelDownloaded(): Task<Boolean?> {
         return remoteModelManager.isModelDownloaded(model!!)
     }
 
+    /**
+     * Deletes the currently active model if it is downloaded.
+     * @return A task with a message indicating the outcome of the deletion.
+     */
     fun deleteActiveModel(): Task<String?> {
         if (model == null) {
             Log.i(TAG, "Model not set")
@@ -82,6 +97,10 @@ class ModelManager {
             }
     }
 
+    /**
+     * Retrieves a set of languages for which models have been downloaded.
+     * @return A task with a set of language tags of downloaded models.
+     */
     val downloadedModelLanguages: Task<Set<String>>
         get() = remoteModelManager
             .getDownloadedModels(DigitalInkRecognitionModel::class.java)
@@ -99,6 +118,10 @@ class ModelManager {
                 }
             )
 
+    /**
+     * Downloads the currently selected model.
+     * @return A task with a message indicating the outcome of the download.
+     */
     fun download(): Task<String?> {
         return if (model == null) {
             Tasks.forResult("Model not selected.")
@@ -120,6 +143,7 @@ class ModelManager {
     }
 
     companion object {
+        // Tag used for logging
         private const val TAG = "MLKD.ModelManager"
     }
 }

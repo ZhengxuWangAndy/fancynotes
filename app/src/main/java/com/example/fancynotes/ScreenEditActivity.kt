@@ -45,7 +45,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
+/**
+ * Activity for editing notes. This handles the UI and logic for the edit screen.
+ */
 class EditScreenActivity : ComponentActivity() {
     private val dbHelper = NoteDbHelper(this)
 
@@ -69,7 +71,10 @@ class EditScreenActivity : ComponentActivity() {
     }
 }
 
-
+/**
+ * Composable function to display the top bar in the edit note screen.
+ * @param dbHelper The database helper instance for database operations.
+ */
 @Composable
 fun EditNoteTopBar(dbHelper: NoteDbHelper) {
     TopAppBar {
@@ -100,7 +105,11 @@ fun EditNoteTopBar(dbHelper: NoteDbHelper) {
     }
 }
 
-
+/**
+ * Composable function for the UI and logic of editing a note.
+ * @param dbHelper The database helper instance for database operations.
+ * @param note The note to be edited.
+ */
 @Composable
 fun EditNote(dbHelper: NoteDbHelper, note: Note) {
     val context = LocalContext.current
@@ -197,6 +206,11 @@ fun EditNote(dbHelper: NoteDbHelper, note: Note) {
     }
 }
 
+/**
+ * Composable function to display the full edit screen, including the top bar and note edit form.
+ * @param dbHelper The database helper instance for database operations.
+ * @param editScreenActivity The current activity instance.
+ */
 @Composable
 fun EditScreenDisplay(dbHelper: NoteDbHelper, editScreenActivity: EditScreenActivity) {
     val note = when (CurrentMain.EDIT_NOTE_INDEX) {
